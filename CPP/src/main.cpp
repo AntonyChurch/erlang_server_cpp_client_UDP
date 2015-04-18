@@ -1,24 +1,39 @@
-#include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
+#include <iostream>
+#include <string>
 
 int main()
 {
-  sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
+  //Set the port number
+  int Port = 12345;
+  //Set the server address
+  char serverAddress[] = "127.0.0.1";
+  int serverPort = 54321;
 
-  while (window.isOpen())
-  {
-    sf::Event event;
-    while (window.pollEvent(event))
-    {
-      if (event.type == sf::Event::Closed)
-        window.close();
-      }
+  //Create the socket
+  sf::UdpSocket socket;
 
-      window.clear();
-      window.draw(shape);
-      window.display();
-    }
+  //Bind the socket
+  socket.bind(Port);
 
-    return 0;
-  }
+  std::cout << "Socket Bound" << std::endl;
+
+  //Send a message to the server server
+  std::string message = "Hi, I am " + sf::IpAddress::getLocalAddress().toString();
+
+  std::cout << "Message: " << message << std::endl;
+
+  socket.send(message.c_str(), message.size() + 1, serverAddress, serverPort);
+
+  std::cout << "Mesage sent." << std::endl;
+
+  //Recieve a message from the server.
+  char buffer[1024];
+  std::size_t received = 0;
+  sf::IpAddress sender;
+  unsigned short port;
+  socket.receive(buffer, sizeof(buffer), received, sender, port);
+  std::cout << sender.ToString() << " said: " << buffer << std::endl;
+
+  return 0;
+}
