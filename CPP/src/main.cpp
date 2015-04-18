@@ -19,7 +19,7 @@ int main()
   std::cout << "Socket Bound" << std::endl;
 
   //Send a message to the server server
-  std::string message = "Hi, I am " + sf::IpAddress::getLocalAddress().toString();
+  std::string message = "Here is my game stuff in a packet";
 
   std::cout << "Message: " << message << std::endl;
 
@@ -33,7 +33,7 @@ int main()
   sf::IpAddress sender;
   unsigned short port;
   socket.receive(buffer, sizeof(buffer), received, sender, port);
-  std::cout << sender.ToString() << " said: " << buffer << std::endl;
+  std::cout << "Reply: " << buffer << std::endl;
 
   return 0;
 }
