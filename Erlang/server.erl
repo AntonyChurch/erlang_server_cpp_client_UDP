@@ -3,8 +3,18 @@
 -export([start/1]).
 
 start(Port) ->
-    loop(Port).
+  spawn(fun() -> server(Port) end).
 
-loop(Port) ->
-    io:format("Looped\n"),
-    loop(Port).
+server(Port) ->
+  {ok, Socket} = gen_udp:open(Port, [binary, {active, false}]),
+  io:format("Server opened socket: ~p~n", Socket),
+  loop(Socket).
+
+loop(Socket) ->
+  inet:setopts(Socket, [{active, once}]),
+  receive
+    {udp, Socket, Host, Port, Bin} ->
+      io:format("Server received: ~p~n", [Bin]),
+      gen_udp:send(Socket, Host, Port, <<"Thanks for the message!">>),
+      loop(Socket)
+  end.
